@@ -298,20 +298,3 @@ DROP COLUMN row_num;
 
 SELECT * 
 FROM world_layoffs.layoffs_staging_2;
-
-
--- top five companies with the highest number of layoffs for each year based on the total layoffs recorded
-with company_year(company, years, total_laid_off) as
-(
-select company,year(`date`), sum(total_laid_off) 
-from layoffs_staging_2
-group by company, year(`date`)
-) , company_years_rank as
-(
-select *,dense_rank() OVER(PARTITION BY years ORDER BY total_laid_off desc) as ranking
-from company_year
-where years is not null
-order by years ASC
-)
-select * from company_years_rank
-where ranking <=5;
